@@ -2,8 +2,7 @@ import lexer
 import re
 
 class Transpiler:
-  def __init__(self, tokens: list[lexer.Token], indent: str="  "):
-    self.tokens = tokens
+  def __init__(self, indent: str="  "):
     self.indent = indent
     self.result = ""
     self.indent_level = 0
@@ -17,9 +16,9 @@ class Transpiler:
     """
     self.result += join.join(s) + end
   
-  # TODO: Pass tokens directly into function instead of object
-  def transpile(self):
+  def transpile(self, tokens: list[lexer.Token]):
     """Transpiles list of lexer.Token into Python code string"""
+    
     # If currently in a block start statment
     in_stmt = False
     # If the next token is on a new line
@@ -28,8 +27,8 @@ class Transpiler:
     str_lvl = 0
     
     tknno = 0
-    while tknno < len(self.tokens):
-      tkn = self.tokens[tknno]
+    while tknno < len(tokens):
+      tkn = tokens[tknno]
       
       # Auto-unindent
       if tkn.value in ["else if", "else", "catch", "end"]:
@@ -67,7 +66,7 @@ class Transpiler:
         self.emit("-", end="")
       elif tkn.type == "VAR_SET":
         # Convert 'set [var] to' to '[var] set to'
-        t = list(filter(lambda a: a.value == "to", self.tokens))[0]
+        t = list(filter(lambda a: a.value == "to", tokens))[0]
         t.value = "set to"
         t.type = "BOP"
       elif tkn.type == "BOP":
@@ -102,8 +101,8 @@ class Transpiler:
         self.emit("'" if "single" in tkn.value else "\"", end="")
       elif tkn.type == "ID":
         # Join consecutive identifiers into one with '_'
-        while self.tokens[tknno + 1].type == "ID":
-          tkn.value += "_" + self.tokens.pop(tknno + 1).value
+        while tokens[tknno + 1].type == "ID":
+          tkn.value += "_" + tokens.pop(tknno + 1).value
         self.emit(tkn.value)
         
         

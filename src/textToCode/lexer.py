@@ -46,8 +46,7 @@ class Lexer:
     "ID": [r"[a-z]+"],
   }
   
-  def __init__(self, code: str):
-    self.code = code
+  def __init__(self):
     self.token_funcs = {
       
     }
@@ -55,10 +54,9 @@ class Lexer:
     # Pattern matching string for tokens
     self.TKN_MATCH = "|".join([f"(?P<{t}>{'|'.join([f'(?:{a})' for a in self.TOKENS[t]])})" for t in self.TOKENS])
   
-  #TODO: Pass code string directly into function instead of object
-  def lex(self):
+  def lex(self, code: str):
     """Lexes input string into lexer.Token objects"""
-    matches = re.finditer(self.TKN_MATCH, self.code.lower())
+    matches = re.finditer(self.TKN_MATCH, code.lower())
     lineno = 0
     linestart = 0
     tokens = []
