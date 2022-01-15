@@ -26,10 +26,8 @@ class Lexer:
     "KWD_BLK_MOD": ["if", "else if", "while", "for", "catch"],
     # Unmodifiable block statment (ex: else:)
     "KWD_BLK_NMD": ["else", "try", "finally"],
-    # Keyword constants
-    "KWD_VAL": ["none", "true", "false"],
-    # Binary operators
-    "BOP": ["in", "and", "or", "(is )?set to"],
+    # Symbols with one to one corrispondence
+    "SYM": ["in", "and", "or", "(is )?set to", "none", "true", "false"],
     # Comparison operators
     "CMP": [r"(is )?equal to", r"(is )?not equal to", r"(is )?greater than or equal to",
             r"(is )?less than or equal to", r"(is )?less than", r"(is )?greater than"],
@@ -55,7 +53,14 @@ class Lexer:
     self.TKN_MATCH = "|".join([f"(?P<{t}>{'|'.join([f'(?:{a})' for a in self.TOKENS[t]])})" for t in self.TOKENS])
   
   def lex(self, code: str):
-    """Lexes input string into lexer.Token objects"""
+    """Converts text string into labled tokens
+
+    Args:
+        code (str): Code to lex
+
+    Returns:
+        list[Token]: Output tokens
+    """    
     matches = re.finditer(self.TKN_MATCH, code.lower())
     lineno = 0
     linestart = 0

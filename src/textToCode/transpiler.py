@@ -17,7 +17,14 @@ class Transpiler:
     self.result += join.join(s) + end
   
   def transpile(self, tokens: list[lexer.Token]):
-    """Transpiles list of lexer.Token into Python code string"""
+    """Transpiles token list into Python code
+
+    Args:
+        tokens (list[lexer.Token]): tokens to transpile
+
+    Returns:
+        str: Python code
+    """
     
     # If currently in a block start statment
     in_stmt = False
@@ -53,13 +60,6 @@ class Transpiler:
           in_stmt = False
         self.emit("\n", end='')
         new_line = True
-      elif tkn.type == "KWD_VAL":
-        # TODO: Merge BOP and KWD_VAL
-        self.emit({
-          "none": "None",
-          "true": "True",
-          "false": "False"
-        }[tkn.value])
       elif tkn.type in "NUM":
         self.emit(tkn.value)
       elif tkn.type == "UOP_NEG":
@@ -68,14 +68,17 @@ class Transpiler:
         # Convert 'set [var] to' to '[var] set to'
         t = list(filter(lambda a: a.value == "to", tokens))[0]
         t.value = "set to"
-        t.type = "BOP"
-      elif tkn.type == "BOP":
+        t.type = "SYM"
+      elif tkn.type == "SYM":
         self.emit({
           "in": "in",
           "or": "or",
           "and": "and",
           "set to": "=",
           "is set to": "=",
+          "none": "None",
+          "true": "True",
+          "false": "False",
         }[tkn.value])
       elif tkn.type == "CMP":
         tkn.value = re.sub(r"(^is )|( than$)|( to$)", "", tkn.value)
