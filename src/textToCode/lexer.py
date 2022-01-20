@@ -39,16 +39,14 @@ class Lexer:
     "STR_CLS": ["un(single )?quote"],
     # Set variable
     "VAR_SET": ["set"],
+    # Escape symbol
+    "ESC": ["real"],
     
     # Identifier
     "ID": [r"[a-z]+"],
   }
   
   def __init__(self):
-    self.token_funcs = {
-      
-    }
-    
     # Pattern matching string for tokens
     self.TKN_MATCH = "|".join([f"(?P<{t}>{'|'.join([f'(?:{a})' for a in self.TOKENS[t]])})" for t in self.TOKENS])
   
@@ -69,10 +67,6 @@ class Lexer:
     for match in matches:
       
       tkn = Token(match.lastgroup, match.group(0), lineno, match.start() - linestart)
-      
-      # Transform token with respective function
-      if tkn.type in self.token_funcs:
-        self.token_funcs[tkn.type](tkn)
       
       # Track line/column number
       if tkn.type == "EOL":

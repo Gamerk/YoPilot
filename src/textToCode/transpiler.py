@@ -46,7 +46,9 @@ class Transpiler:
         self.emit(self.indent * self.indent_level, end="")
         new_line = False
       
-      if tkn.type == "KWD_BLK_MOD":
+      if tkn.type == "ESC":
+        tokens[tknno + 1].type = "ID"
+      elif tkn.type == "KWD_BLK_MOD":
         in_stmt = True
         self.emit(tkn.value if tkn.value != "else if" else "elif")
       elif tkn.type == "KWD_BLK_NMD":
